@@ -7,6 +7,48 @@
 using namespace System;
 using namespace std;
 
+bool isValidTag(string target)
+{
+	bool ans = false;
+
+	//remove everything after the first space
+	std::string tar = target.substr(0, target.find(" ", 0));
+
+	//cout << t; cout << endl;
+	
+	//check against the white list. 
+	string validTags[] =
+	{
+		"a"
+		,"abbr"
+		,"acronym"
+		,"b"
+		,"blockquote"
+		,"cite"
+		,"code"
+		,"del"
+		,"em"
+		,"i"
+		,"q"
+		,"strike"
+		,"strong"
+	};
+
+	for (const string &text : validTags)
+	{
+		if (text == tar)
+		{
+			ans = true;
+			cout << "you are valid!\n";
+		}
+	}
+	
+
+
+	return ans;
+}
+
+
 bool isValid(string targetString)
 {
 	string tag;
@@ -35,8 +77,14 @@ bool isValid(string targetString)
 
 		//cout << targetString[i]; cout << endl;
 	}
-	return true;
+
+	isTag = isValidTag(tag);
+
+	return isTag;
 }
+
+
+
 
 
 
