@@ -1,113 +1,93 @@
-// Sanitization.cpp : main project file.
-
+/***********************************************************************
+ * Program:
+ *    Assignment 04, Lab 04
+ *    Brother Wilson, CS470
+ * Author:
+ *    Joshua Pattullo
+ * Summary:
+ *      Sanitizes html tags based on a whitelist
+ ************************************************************************/
 #include "stdafx.h"
 #include <iostream>
+#include <array>
 #include <string>
-
-using namespace System;
+#include <stack>
 using namespace std;
 
-bool isValidTag(string target)
-{
-	bool ans = false;
-
-	//remove everything after the first space
-	std::string tar = target.substr(0, target.find(" ", 0));
-
-	//cout << t; cout << endl;
-	
-	//check against the white list. 
-	string validTags[] =
-	{
-		"a"
-		,"abbr"
-		,"acronym"
-		,"b"
-		,"blockquote"
-		,"cite"
-		,"code"
-		,"del"
-		,"em"
-		,"i"
-		,"q"
-		,"strike"
-		,"strong"
-	};
-
-	for (const string &text : validTags)
-	{
-		if (text == tar)
-		{
-			ans = true;
-			cout << "you are valid!\n";
-		}
-	}
-	
-
-
-	return ans;
+void sanitize(string &input, int &findLoc) {
+   int sim = findLoc - 1;
+   input.replace(sim, 1, "&lt;");
+   while (input[sim] != '>' || sim >= input.length()) {
+      sim++;
+   }
+   input.replace(sim, 1, "&gt;");
 }
 
-
-bool isValid(string targetString)
-{
-	string tag;
-	bool isTag = false;
-	//We should have the logic here to deteremine if the HTML tag is valid.  
-	for (std::string::size_type i = 0; i < targetString.size(); ++i) {
-		if (targetString[i] == '<')
-		{
-			cout << "< is a opening tag\n";
-			isTag = true;
-			continue;
+bool nested(string temp, stack<string> &nestStack) {
+	if (temp[0] == '/') {
+		temp.erase(0, 1);
+		if (nestStack.top() != temp) {
+			return false;
+		} else {
+			nestStack.pop();
+			return true;
 		}
-		if (targetString[i] == '>')
-		{
-			cout << "> is a closing tag\n";
-			isTag = false;
-			continue;
-
-		}
-		if (isTag == true)
-		{
-			tag += targetString[i];
-			cout << tag; cout << endl;
-		}
-
-
-		//cout << targetString[i]; cout << endl;
+	} else {
+		nestStack.push(temp);
+		return true;
 	}
-
-	isTag = isValidTag(tag);
-
-	return isTag;
 }
 
-
-
-
-
-
-int main()
-{
+string whiteList() {
+	int findLoc = 0;
+	bool good = false;
+	string temp;
+	string whiteList[13] = { "a", "abbr", "acronym", "b", "blockquote", "cite",
+		"code", "del", "em", "i", "q", "strike", "strong" };
+	stack<string> nestStack;
 	string input;
-	bool ans;
-	cout << "Please enter HTML to validate\n";
-	
-	cin >> input;
-	getchar();
-	
-	ans = isValid(input);
-	
-	if (ans == true)
-	{
-		cout << "You input is valid\n";
+	input = "";
+	findLoc = 0;
+	cout << "> ";
+	getline(cin, input);
+	while (findLoc != -1) {
+		findLoc = input.find('<', findLoc);
+		if (findLoc != -1) {
+			temp = "";
+			for (int i = ++findLoc; input[i] != '>'; i++) {
+				if (input[i] == ' ')
+					break;
+				temp += input[i];
+			}
+			
+			for (const string &tag : whiteList) {
+				if (temp == tag || temp == ('/' + tag)) {
+					good = true;
+				}
+			}
+			if (!good) {
+				sanitize(input, findLoc);
+			} else {
+				if (!nested(temp, nestStack)) {
+					sanitize(input, findLoc);
+				}
+				good = false;
+			}
+		}
 	}
-	else if (ans == false)
-	{
-		cout << "Your input is invalid\n";
+	while (!nestStack.empty()) {
+		input += ("</" + nestStack.top() + ">");
+		nestStack.pop();
 	}
-		
-	return 0;
+	return input;
 }
 
+
+int main() {
+	string san;
+	while (san != "quit") {
+		san = whiteList();
+	   cout << "\t" << san << endl;
+	}
+   return 0;
+}

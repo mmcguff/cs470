@@ -1,2 +1,3 @@
 ﻿  Sanitization.cpp
+Sanitization.cpp(20): warning C4018: '>=': signed/unsigned mismatch
   Sanitization.vcxproj -> C:\git\mmcguff\cs470\Sanitization\Debug\Sanitization.exe
