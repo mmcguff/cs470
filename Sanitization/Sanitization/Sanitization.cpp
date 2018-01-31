@@ -44,6 +44,9 @@ string whiteList() {
 	string temp;
 	string whiteList[13] = { "a", "abbr", "acronym", "b", "blockquote", "cite",
 		"code", "del", "em", "i", "q", "strike", "strong" };
+
+	int len = sizeof(whiteList)/sizeof(string);
+
 	stack<string> nestStack;
 	string input;
 	input = "";
@@ -60,8 +63,8 @@ string whiteList() {
 				temp += input[i];
 			}
 			
-			for (const string &tag : whiteList) {
-				if (temp == tag || temp == ('/' + tag)) {
+			for (int i = 0; i < len; i++) {
+				if (temp == whiteList[i] || temp == ('/' + whiteList[i])) {
 					good = true;
 				}
 			}
