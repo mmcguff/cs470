@@ -3,7 +3,7 @@
 *    Lab 05, The stack
 *    Brother Helfrich, CS470
 * Author:
-*    your name
+*    Matthew McGuff
 * Summary: 
 *    This program is designed to illustrate weaknesses in the stack.
 *
@@ -82,7 +82,14 @@ void partOne(int byValueParameter)
 
    ////////////////////////////////////////////////
    // put your magic code between here...
+   //& is called the memory operator.  It pulls the location in
+   //memory were the declared variable lives.  
 
+      pStack = &pStack;
+      pHeap  = &pHeap;
+      pCode  = &pCode;
+  
+  
    // ... and here
    ////////////////////////////////////////////////
 
