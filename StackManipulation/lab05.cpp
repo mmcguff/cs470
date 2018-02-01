@@ -13,6 +13,7 @@
 #include <iostream>
 #include <iomanip>
 #include <cassert>
+#include <string>
 using namespace std;
 
 
@@ -82,9 +83,7 @@ void partOne(int byValueParameter)
 
    ////////////////////////////////////////////////
    // put your magic code between here...
-   //& is called the memory operator.  It pulls the location in
-   //memory were the declared variable lives.  
-
+  
       pStack = &pStack;
       pHeap  = &pHeap;
       pCode  = &pCode;
@@ -149,7 +148,10 @@ void partTwo(char *text, long number)
       
       ////////////////////////////////////////////////
       // put your magic code between here...
-   
+      std::string result = "[" + std::to_string(i) + "]\n";
+      
+      
+      cout << result;
       // ... and here
       ////////////////////////////////////////////////
    }
