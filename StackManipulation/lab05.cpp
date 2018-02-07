@@ -148,10 +148,10 @@ void partTwo(char *text, long number)
       
       ////////////////////////////////////////////////
       // put your magic code between here...
-      std::string result = "[" + std::to_string(i) + "]\n";
+      std::string iloc = "[" + std::to_string(i) + "]\t";
       
       
-      cout << result;
+      cout << iloc << &bow << endl;
       // ... and here
       ////////////////////////////////////////////////
    }
