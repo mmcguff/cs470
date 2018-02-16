@@ -1,9 +1,9 @@
 /***********************************************************************
 * Program:
 *    Lab 05, The stack
-*    Brother Wilson, CS470
+*    Brother Helfrich, CS470
 * Author:
-*    Matthew McGuff
+*    your name
 * Summary: 
 *    This program is designed to illustrate weaknesses in the stack.
 *
@@ -13,11 +13,10 @@
 #include <iostream>
 #include <iomanip>
 #include <cassert>
-#include <cstdio>
-#include <sstream>
 #include <string>
 using namespace std;
 
+int* q = new int(13);
 
 void partOne(int); // Find the address of the stack, heap, and code segments
 void partTwo(char *, long);    // Manipulate the stack to find a weakness
@@ -69,6 +68,7 @@ int main()
  **************************************************************
  **************************************************************/
 
+
 /**********************************************
  * Part 1
  *
@@ -80,19 +80,16 @@ void partOne(int byValueParameter)
 {
    void *pStack = NULL;
    void *pHeap  = NULL;
-   const void *pCode  = NULL;
+   void *pCode  = NULL;
 
    ////////////////////////////////////////////////
    // put your magic code between here...
-   
-   // get the address of the stack
-   pStack = &pStack;
-   
-   // DEREFERENCE for heap
-   pHeap = new int;
-   
-   // pull from function to show code
-   pCode = (void*)&partOne;
+
+   int s;
+   int *h = new int;
+   pStack = &s;
+   pHeap = h;
+   pCode = &q;
 
    // ... and here
    ////////////////////////////////////////////////
@@ -135,7 +132,6 @@ void partTwo(char *text, long number)
 {
    // start your display of the stack from this point
    long bow = number + 1111111;
-
    // header for our table. Use these setw() offsets in your table
    cout << "[" << setw(2) << 'i' << ']'
         << setw(15) << "address"
@@ -154,21 +150,20 @@ void partTwo(char *text, long number)
       ////////////////////////////////////////////////
       // put your magic code between here...
 
-      // display the number
-      cout << "[" << setw(2) << i << "]";
-      
-      // display the address of bow in relation to i
-      cout << setw(15) << &bow + i;
+	   cout << "[" << setw(2) << i << ']'
+		   << setw(15) << &bow + i
+                << setw(20) << hex << (long)*(&bow + i)
+                << setw(20) << dec << (long)*(&bow + i)
+                << setw(6);
+	   for (int j = 0; j < 8; j++) {
+		   if ((int)(*(((char*)(&bow + i)) + j)) >= 33) {
+                      cout <<  *(((char*)(&bow + i)) + j) << ' ';
+		   } else {
+                      cout << ". ";
+		   }
+	   } 
+           cout << endl;
 
-      // display the hex value
-      cout << setw(20) << hex << (&bow)[i];
-
-      // display the decimal value
-      cout << setw(20) << dec << (&bow)[i];
-
-      // get and display char stuff
-      char * charString = reinterpret_cast < char * > (&bow + i);
-      cout << setw(20) << displayCharArray(charString) << endl;
       // ... and here
       ////////////////////////////////////////////////
    }
@@ -193,52 +188,31 @@ void readStack()
    
    ////////////////////////////////////////////////
    // put your magic code between here...
+   short p = 5;
+   void (*f)() = &partThree;
+   cout << "fun head " << &f << "\n\n";
+   void (*pointerFunction)(char) = (void (*)(char))(&p + 53);
+   cout << &pointerFunction;
+   //*pointerFunction = pass;
+   for (int i = 0; i < 16; i++) {
+      text[i] = *(((char*)(&p + 57)) + i);
+   }
+   number = (int)*(&p + 69);
+   *(((char*)(&p + 72)) + 1) = 'A';
 
-   // variable to find memory locations, also the answer to everything
-   int p = 42;
-
-   // loop through 20 memory locations and display chars and ints
-   // to find the offset for values to receive and change
-   for (int i = 20; i <= 40; i++)
+   for (int i = 0; i <= 150; i++)
    {
-      // display the number
-      cerr << "[" << setw(4) << i << "]";
-      // display the decimal value
-      cerr << setw(20) << dec << (&p)[i];
-      // get and display char stuff
-      char * c = reinterpret_cast < char * > (&p + i);
-      string output;
-      for (int i = 0; i < 4; i++) 
-      {
-         output += string(" ") + (c[i] >= ' ' && c[i] <= 'z' ? c[i] : '.');
+      cout << '[' << setw(5) << i << ']'
+           << setw (15) << (&p + i) << '\t';
+      for (int j = 0; j < 2; j++) {
+         if ((int)(*(((char*)(&p + i)) + j)) >= 33) {
+            cout <<  *(((char*)(&p + i)) + j) << ' ';
+         } else {
+            cout << ". ";
+         }
       }
-      cerr << setw(10) << output << endl;
+      cout << endl;
    }
-   // get the number
-   number = * (&p + 33);
-   
-   // get the text
-   for (int i = 0; i < 16; i++) 
-   {
-      text[i] = * (((char*)(&p + 29)) + i);
-   }
-   
-   //thru trial and error I was able to come to the 
-   //correct offset.  There may be an automated way
-   //to do this but this is after all a hack. Perhaps
-   //if I was suppose to create a hacking tool then 
-   //this could be done in a more efficent way.  
-   * (int*)(&p + 35) = (size_t) &pass;
-   
-   // change the letter grade by finding the first occurance of a letter 
-   //and changing it to the desired grade.  This would have to be changed
-   //if we needed it work in other c++ versions as it may allocate the location
-   //of this different and would need a different offset.  The cerr would
-   //help with locating this. 
-   * (((char *)(&p + 34) + 3)) = 'A';
-   
-   
-   
    // ... and here
    ////////////////////////////////////////////////
 
@@ -249,6 +223,7 @@ void readStack()
    cout << "\ttext:   "
         << text
         << endl;
+
    return;
 }
 
@@ -271,11 +246,14 @@ void partThree()
    cin  >> number;
    cout << "text:   ";
    cin  >> text;
-
+   
    // Call the function and display the results.
    pointerFunction = fail;
    letterGrade = 'B';
-
+   cout << "\nNumber " << &number << endl << endl
+      //<< "text" << &(*text[0]) << "\n\n"
+      //<< "grade" << &letterGrade << "\n\n"
+   << "funct " << &pointerFunction << "\n\n";
    readStack();            // vulnerability is here 
    (*pointerFunction)(letterGrade);
 
@@ -299,3 +277,5 @@ void pass(char grade)
 {
    cout << "\tGood job, you got a(n) '" << grade << "'\n";
 }
+
+
